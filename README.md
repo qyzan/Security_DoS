@@ -46,50 +46,39 @@ Detects active defensive measures. If more than **15%** of traffic is met with H
 
 ## 🛠️ Installation & Build
 
-### Prerequisites
-- [Go](https://go.dev/dl/) v1.21 or higher.
-
 ### Build from Source
 
+**SecurityDoS** is designed to be built as a standalone binary. Once built, you only need the executable file to run the platform.
+
+1. **Cloning & Preparation**:
    ```bash
-   # Clone the repository and enter the directory
    git clone https://github.com/qyzan/SecurityDoS.git
    cd SecurityDoS
-
-    # Tidy and download dependencies
-    go mod tidy
-
-    # Build as a standalone single binary
-    go build -o securitydos.exe .
-    ```
-
-> [!TIP]
-> **Single Binary Mode**: The generated `.exe` is standalone. It includes all necessary UI assets and default configurations internally.
+   go mod tidy
+   ```
 
 2. **Compile for your Platform**:
 
 #### 🪟 Windows
 ```powershell
+# Produces securitydos.exe
 go build -o securitydos.exe .
 ```
 
 #### 🐧 Linux (64-bit)
 ```bash
-GOOS=linux GOARCH=amd64 go build -o security-dos-linux .
-chmod +x security-dos-linux
+# Produces securitydos-linux
+go build -o securitydos-linux .
 ```
 
-#### 🍎 macOS (Intel & Apple Silicon)
-- **Apple Silicon (M1/M2/M3):**
-  ```bash
-  GOOS=darwin GOARCH=arm64 go build -o security-dos-mac-arm .
-  chmod +x security-dos-mac-arm
-  ```
-- **Intel Mac:**
-  ```bash
-  GOOS=darwin GOARCH=amd64 go build -o security-dos-mac-intel .
-  chmod +x security-dos-mac-intel
-  ```
+#### 🍎 macOS (Apple Silicon & Intel)
+```bash
+# Apple Silicon (M1/M2/M3)
+go build -o securitydos-mac .
+```
+
+> [!NOTE]
+> **Standalone Advantage**: The resulting binary includes all dashboard assets and default configurations. You can move the binary file anywhere on your system and it will run without needing the source folder.
 
 ---
 
