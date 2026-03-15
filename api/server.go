@@ -14,12 +14,12 @@ import (
 	"sync"
 	"time"
 
-	"security-dos/engine"
-	"security-dos/logger"
-	"security-dos/metrics"
-	"security-dos/reports"
-	"security-dos/safety"
-	"security-dos/scenario"
+	"securitydos/engine"
+	"securitydos/logger"
+	"securitydos/metrics"
+	"securitydos/reports"
+	"securitydos/safety"
+	"securitydos/scenario"
 
 	"github.com/gorilla/websocket"
 )

@@ -1,4 +1,4 @@
-module security-dos
+module securitydos
 
 go 1.24.3
 

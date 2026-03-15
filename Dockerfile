@@ -14,7 +14,7 @@ RUN go mod download
 COPY . .
 
 # Build the application
-RUN CGO_ENABLED=0 GOOS=linux go build -o security-dos .
+RUN CGO_ENABLED=0 GOOS=linux go build -o securitydos .
 
 # Run Stage
 FROM alpine:latest
@@ -25,7 +25,7 @@ WORKDIR /app
 RUN apk add --no-cache ca-certificates
 
 # Copy binary from builder
-COPY --from=builder /app/security-dos .
+COPY --from=builder /app/securitydos .
 
 # Copy assets and configs
 COPY --from=builder /app/configs ./configs
@@ -38,5 +38,5 @@ RUN mkdir -p logs && chmod 777 logs
 EXPOSE 8090
 
 # Default command (Safe-by-Default)
-ENTRYPOINT ["./security-dos"]
+ENTRYPOINT ["./securitydos"]
 CMD ["-config", "configs/config.yaml", "--guard"]

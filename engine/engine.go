@@ -14,9 +14,9 @@ import (
 	"sync/atomic"
 	"time"
 
-	"security-dos/metrics"
-	"security-dos/safety"
-	"security-dos/scenario"
+	"securitydos/metrics"
+	"securitydos/safety"
+	"securitydos/scenario"
 )
 
 // RequestResult holds the outcome of a single HTTP request

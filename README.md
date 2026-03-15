@@ -1,8 +1,8 @@
-# ⬡ Security DoS: Infrastructure Resilience & Red Team Platform
+# ⬡ SecurityDoS: Infrastructure Resilience & Red Team Platform
 
-**Security DoS** is a professional-grade infrastructure resilience testing framework built in Go. Designed for Red Team operations and SRE (Site Reliability Engineering) teams, it provides deep insights into how your systems behave under extreme load.
+**SecurityDoS** is a professional-grade infrastructure resilience testing framework built in Go. Designed for Red Team operations and SRE (Site Reliability Engineering) teams, it provides deep insights into how your systems behave under extreme load.
 
-Unlike traditional stress testing tools, **Security DoS** combines a high-performance concurrent engine with real-time analytics and an intelligent "Observation" system that automatically identifies technical breaking points and security triggers.
+Unlike traditional stress testing tools, **SecurityDoS** combines a high-performance concurrent engine with real-time analytics and an intelligent "Observation" system that automatically identifies technical breaking points and security triggers.
 
 ---
 
@@ -120,7 +120,7 @@ Add `scenario_*.yaml` to `configs/` for automatic detection.
 
 ## 🛡️ Safety Guard (Opt-in)
 
-By default, **Security DoS** runs in **Unrestricted Mode** for maximum flexibility during local development or authorized laboratory testing. To enforce strict corporate policies defined in `config.yaml`, use the `--guard` flag.
+By default, **SecurityDoS** runs in **Unrestricted Mode** for maximum flexibility during local development or authorized laboratory testing. To enforce strict corporate policies defined in `config.yaml`, use the `--guard` flag.
 
 - **Unrestricted Mode (Default)**: Ignores `allowed_targets`, `max_rps`, and `auth_tokens`.
 - **Protected Mode (`--guard`)**: Enforces all safety policies, blocks unauthorized targets, and requires valid API tokens.
@@ -158,7 +158,7 @@ By default, **Security DoS** runs in **Unrestricted Mode** for maximum flexibili
 
 ## ⚠️ Ethical Disclaimer
 
-**Security DoS is for authorized security testing only.** 
+**SecurityDoS is for authorized security testing only.** 
 Unauthorized use of this tool against targets you do not own or have explicit permission to test is strictly prohibited and may be illegal. The developers assume no liability for misuse or damage caused by this platform.
 
 ---

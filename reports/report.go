@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"security-dos/metrics"
-	"security-dos/scenario"
+	"securitydos/metrics"
+	"securitydos/scenario"
 )
 
 // Report holds full test run results for export

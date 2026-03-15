@@ -1,9 +1,9 @@
 version: '3.8'
 
 services:
-  security-dos:
+  securitydos:
     build: .
-    container_name: security-dos
+    container_name: securitydos
     ports:
       - "8090:8090"
     volumes:

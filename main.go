@@ -9,10 +9,10 @@ import (
 	"syscall"
 	"time"
 
-	"security-dos/api"
-	"security-dos/logger"
-	"security-dos/metrics"
-	"security-dos/safety"
+	"securitydos/api"
+	"securitydos/logger"
+	"securitydos/metrics"
+	"securitydos/safety"
 
 	"gopkg.in/yaml.v3"
 )
@@ -67,7 +67,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	log.Info("Security DoS v1.0 starting up")
+	log.Info("SecurityDoS v1.0 starting up")
 	log.Info(fmt.Sprintf("Config loaded from: %s", *configPath))
 
 	// Safety guard (Opt-in)
