@@ -54,8 +54,8 @@ Detects active defensive measures. If more than **15%** of traffic is met with H
 1. **Cloning & Preparation**:
    ```bash
    # Clone the repository and enter the directory
-   git clone <your-repo-url>
-   cd security-dos
+   git clone https://github.com/qyzan/Security_DoS.git
+   cd Security_DoS
 
    # Tidy and download dependencies (Universal for all OS)
    go mod tidy
