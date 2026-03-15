@@ -51,21 +51,26 @@ Detects active defensive measures. If more than **15%** of traffic is met with H
 
 ### Build from Source
 
-1. **Cloning & Preparation**:
    ```bash
    # Clone the repository and enter the directory
    git clone https://github.com/qyzan/SecurityDoS.git
    cd SecurityDoS
 
-   # Tidy and download dependencies (Universal for all OS)
-   go mod tidy
-   ```
+    # Tidy and download dependencies
+    go mod tidy
+
+    # Build as a standalone single binary
+    go build -o securitydos.exe .
+    ```
+
+> [!TIP]
+> **Single Binary Mode**: The generated `.exe` is standalone. It includes all necessary UI assets and default configurations internally.
 
 2. **Compile for your Platform**:
 
 #### 🪟 Windows
 ```powershell
-go build -o security-dos.exe .
+go build -o securitydos.exe .
 ```
 
 #### 🐧 Linux (64-bit)
@@ -129,14 +134,13 @@ By default, **SecurityDoS** runs in **Unrestricted Mode** for maximum flexibilit
 
 ## 📖 Usage Guide
 
-1. **Start the Platform**:
-   - **Default (Unrestricted):**
+   - **Default (Portable Mode):**
      ```powershell
-     .\security-dos.exe -config configs/config.yaml
+     .\securitydos.exe
      ```
-   - **Safe Mode (Enforced):**
+   - **With Custom Config (Override):**
      ```powershell
-     .\security-dos.exe -config configs/config.yaml --guard
+     .\securitydos.exe -config my-config.yaml
      ```
 
    - **Using Docker (Safe Mode by Default):**
@@ -163,4 +167,4 @@ Unauthorized use of this tool against targets you do not own or have explicit pe
 
 ---
 
-**Red Team Platform v1.0** | *Built for Resilience.*
+**SecurityDoS v1.0** | *Standalone Red Team Platform.*
