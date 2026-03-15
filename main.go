@@ -2,7 +2,9 @@ package main
 
 import (
 	"flag"
+	"embed"
 	"fmt"
+	"io/fs"
 	"net/http"
 	"os"
 	"os/signal"
@@ -16,6 +18,9 @@ import (
 
 	"gopkg.in/yaml.v3"
 )
+
+//go:embed all:dashboard/*
+var dashboardEmbed embed.FS
 
 // AppConfig is parsed from config.yaml
 type AppConfig struct {
@@ -83,11 +88,12 @@ func main() {
 	defer collector.Stop()
 
 	// API server
+	dashboardFS, _ := fs.Sub(dashboardEmbed, "dashboard")
 	srv := api.NewServer(guard, collector, log, api.AnalysisConfig{
 		BreakingPointRate:   cfg.Analysis.BreakingPointRate,
 		LatencyThresholdMs:  cfg.Analysis.LatencyThresholdMs,
 		SecurityTriggerRate: cfg.Analysis.SecurityTriggerRate,
-	})
+	}, dashboardFS)
 
 	log.Info(fmt.Sprintf("Dashboard available at http://localhost%s", addr))
 	if *enableGuard {

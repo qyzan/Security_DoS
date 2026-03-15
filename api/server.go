@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"io/fs"
 	"net/http"
 	"net/url"
 	"os"
@@ -42,6 +43,7 @@ type Server struct {
 	upgrader websocket.Upgrader
 
 	analysisConfig AnalysisConfig
+	dashboardFS    fs.FS
 
 	lastProbeSuccess bool
 	lastProbeMsg     string
@@ -72,12 +74,13 @@ type StatusResponse struct {
 }
 
 // NewServer creates the API server
-func NewServer(guard *safety.Guard, col *metrics.Collector, log *logger.Logger, ana AnalysisConfig) *Server {
+func NewServer(guard *safety.Guard, col *metrics.Collector, log *logger.Logger, ana AnalysisConfig, dashboard fs.FS) *Server {
 	s := &Server{
 		guard:          guard,
 		collector:      col,
 		log:            log,
 		analysisConfig: ana,
+		dashboardFS:    dashboard,
 		upgrader: websocket.Upgrader{
 			CheckOrigin: func(r *http.Request) bool { return true },
 		},
@@ -105,9 +108,9 @@ func (s *Server) Handler() http.Handler {
 	// WebSocket stream
 	mux.Handle("/ws/metrics", s.auth(http.HandlerFunc(s.handleWS)))
 
-	// Dashboard static files
+	// Dashboard static files (Embedded)
 	mux.Handle("/logs/", s.auth(http.StripPrefix("/logs/", http.FileServer(http.Dir("logs")))))
-	mux.Handle("/", http.FileServer(http.Dir("dashboard")))
+	mux.Handle("/", http.FileServer(http.FS(s.dashboardFS)))
 
 	return corsMiddleware(mux)
 }
