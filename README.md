@@ -55,6 +55,16 @@ go install github.com/qyzan/SecurityDoS@latest
 > [!TIP]
 > This will compile the standalone binary and place it in your `$GOPATH/bin` (or `~/go/bin`). You can then run `SecurityDoS` from anywhere in your terminal.
 
+### Quick Start (No Build)
+
+If you have the source code cloned, you can run the platform directly without manual compilation:
+
+```bash
+go run .
+```
+
+---
+
 ### Build from Source
 
 **SecurityDoS** is designed to be built as a standalone binary. Once built, you only need the executable file to run the platform.
