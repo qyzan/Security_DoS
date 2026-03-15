@@ -44,6 +44,7 @@ type Server struct {
 
 	analysisConfig AnalysisConfig
 	dashboardFS    fs.FS
+	configsFS      fs.FS
 
 	lastProbeSuccess bool
 	lastProbeMsg     string
@@ -74,13 +75,14 @@ type StatusResponse struct {
 }
 
 // NewServer creates the API server
-func NewServer(guard *safety.Guard, col *metrics.Collector, log *logger.Logger, ana AnalysisConfig, dashboard fs.FS) *Server {
+func NewServer(guard *safety.Guard, col *metrics.Collector, log *logger.Logger, ana AnalysisConfig, dashboard fs.FS, configs fs.FS) *Server {
 	s := &Server{
 		guard:          guard,
 		collector:      col,
 		log:            log,
 		analysisConfig: ana,
 		dashboardFS:    dashboard,
+		configsFS:      configs,
 		upgrader: websocket.Upgrader{
 			CheckOrigin: func(r *http.Request) bool { return true },
 		},
@@ -176,25 +178,46 @@ func (s *Server) handleGetProfiles(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	files, err := filepath.Glob("configs/scenario_*.yaml")
-	if err != nil {
-		jsonError(w, "failed to list scenarios: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
+	// 1. Scan disk
+	diskFiles, _ := filepath.Glob("configs/scenario_*.yaml")
+	
+	// 2. Scan embedded
+	embedFiles, _ := fs.Glob(s.configsFS, "scenario_*.yaml")
 
 	profiles := []scenario.Scenario{}
-	for _, f := range files {
-		data, err := os.ReadFile(f)
-		if err != nil {
-			s.log.Error(fmt.Sprintf("Failed to read scenario file %s: %v", f, err))
-			continue
+	seenURLs := make(map[string]bool)
+
+	// Helper to process files
+	processFile := func(path string, isEmbedded bool) {
+		var data []byte
+		var err error
+		if isEmbedded {
+			data, err = fs.ReadFile(s.configsFS, path)
+		} else {
+			data, err = os.ReadFile(path)
 		}
+		
+		if err != nil {
+			return
+		}
+		
 		sc, err := scenario.Parse(data)
 		if err != nil {
-			s.log.Error(fmt.Sprintf("Failed to parse scenario %s: %v", f, err))
-			continue
+			return
 		}
-		profiles = append(profiles, *sc)
+		
+		// Avoid duplicates if same file exists on disk and embedded
+		if !seenURLs[sc.Target+string(sc.TestType)] {
+			profiles = append(profiles, *sc)
+			seenURLs[sc.Target+string(sc.TestType)] = true
+		}
+	}
+
+	for _, f := range diskFiles {
+		processFile(f, false)
+	}
+	for _, f := range embedFiles {
+		processFile(f, true)
 	}
 
 	s.log.Info(fmt.Sprintf("Served %d test profiles to dashboard", len(profiles)))

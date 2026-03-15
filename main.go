@@ -22,6 +22,9 @@ import (
 //go:embed all:dashboard/*
 var dashboardEmbed embed.FS
 
+//go:embed all:configs/*
+var configsEmbed embed.FS
+
 // AppConfig is parsed from config.yaml
 type AppConfig struct {
 	Server struct {
@@ -46,7 +49,7 @@ func main() {
 	flag.Parse()
 
 	// Load config
-	cfg, err := loadConfig(*configPath)
+	cfg, err := loadConfig(*configPath, configsEmbed)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "fatal: cannot load config: %v\n", err)
 		os.Exit(1)
@@ -89,11 +92,12 @@ func main() {
 
 	// API server
 	dashboardFS, _ := fs.Sub(dashboardEmbed, "dashboard")
+	configsFS, _ := fs.Sub(configsEmbed, "configs")
 	srv := api.NewServer(guard, collector, log, api.AnalysisConfig{
 		BreakingPointRate:   cfg.Analysis.BreakingPointRate,
 		LatencyThresholdMs:  cfg.Analysis.LatencyThresholdMs,
 		SecurityTriggerRate: cfg.Analysis.SecurityTriggerRate,
-	}, dashboardFS)
+	}, dashboardFS, configsFS)
 
 	log.Info(fmt.Sprintf("Dashboard available at http://localhost%s", addr))
 	if *enableGuard {
@@ -123,10 +127,20 @@ func main() {
 	log.Info("System shut down gracefully")
 }
 
-func loadConfig(path string) (*AppConfig, error) {
-	data, err := os.ReadFile(path)
+func loadConfig(path string, embedded embed.FS) (*AppConfig, error) {
+	var data []byte
+	var err error
+
+	// 1. Try reading from disk
+	data, err = os.ReadFile(path)
 	if err != nil {
-		return nil, err
+		// 2. Fallback to embedded if disk fails
+		// We need to strip "configs/" if the path starts with it because the sub FS or the embed FS root might differ.
+		// Since we embedded "all:configs/*", the files are at "configs/..."
+		data, err = embedded.ReadFile(path)
+		if err != nil {
+			return nil, fmt.Errorf("config not found on disk or embedded: %w", err)
+		}
 	}
 	cfg := &AppConfig{}
 	if err := yaml.Unmarshal(data, cfg); err != nil {
