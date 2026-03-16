@@ -1,8 +1,8 @@
 package main
 
 import (
-	"flag"
 	"embed"
+	"flag"
 	"fmt"
 	"io/fs"
 	"net/http"
@@ -30,7 +30,7 @@ type AppConfig struct {
 	Server struct {
 		Addr string `yaml:"addr"`
 	} `yaml:"server"`
-	Safety safety.Config `yaml:"safety"`
+	Safety  safety.Config `yaml:"safety"`
 	Logging struct {
 		Path string `yaml:"path"`
 	} `yaml:"logging"`
@@ -38,9 +38,9 @@ type AppConfig struct {
 }
 
 type AnalysisConfig struct {
-	BreakingPointRate    float64 `yaml:"breaking_point_rate"`
-	LatencyThresholdMs   float64 `yaml:"latency_threshold_ms"`
-	SecurityTriggerRate  float64 `yaml:"security_trigger_rate"`
+	BreakingPointRate   float64 `yaml:"breaking_point_rate"`
+	LatencyThresholdMs  float64 `yaml:"latency_threshold_ms"`
+	SecurityTriggerRate float64 `yaml:"security_trigger_rate"`
 }
 
 func main() {
@@ -57,7 +57,7 @@ func main() {
 
 	addr := cfg.Server.Addr
 	if addr == "" {
-		addr = ":8080"
+		addr = ":8090"
 	}
 
 	// Ensure logs directory exists
@@ -120,10 +120,10 @@ func main() {
 	// Wait for signal
 	sig := <-stopSignals
 	log.Info(fmt.Sprintf("Received signal %v, shutting down...", sig))
-	
+
 	// Shutdown logic
 	srv.Stop() // Added Stop method to server if it doesn't exist, or just use Shutdown
-	
+
 	log.Info("System shut down gracefully")
 }
 
@@ -135,8 +135,6 @@ func loadConfig(path string, embedded embed.FS) (*AppConfig, error) {
 	data, err = os.ReadFile(path)
 	if err != nil {
 		// 2. Fallback to embedded if disk fails
-		// We need to strip "configs/" if the path starts with it because the sub FS or the embed FS root might differ.
-		// Since we embedded "all:configs/*", the files are at "configs/..."
 		data, err = embedded.ReadFile(path)
 		if err != nil {
 			return nil, fmt.Errorf("config not found on disk or embedded: %w", err)

@@ -1,6 +1,6 @@
 'use strict';
 /* ══════════════════════════════════════════════════════════════
-   SilentInDeep Dashboard — app.js
+   SecurityDoS Dashboard — app.js
    Real-time WebSocket client • Chart.js • Test control panel
    ══════════════════════════════════════════════════════════════ */
 
@@ -310,14 +310,14 @@ function connectWebSocket() {
   ws.onmessage = (evt) => {
     let snap;
     try { snap = JSON.parse(evt.data); } catch { return; }
-    
+
     // Always accumulate status codes first
     if (snap.status_codes) {
       for (const [k, v] of Object.entries(snap.status_codes)) {
         scCumulative[k] = (scCumulative[k] ?? 0) + v;
       }
     }
-    
+
     // Only update charts if dashboard is visible
     const isDashboardVisible = !document.getElementById('dashboardView').classList.contains('hidden');
     if (isDashboardVisible) {
@@ -361,7 +361,7 @@ async function pollStatus() {
       document.getElementById('dashboardView').classList.remove('hidden');
       document.getElementById('controlPanel').style.display = 'block';
       document.getElementById('postTestPanel').style.display = 'none';
-      
+
       // Ensure WS is connected if it isn't
       if (!ws || ws.readyState !== WebSocket.OPEN) {
         connectWebSocket();
@@ -374,7 +374,7 @@ async function pollStatus() {
     } else {
       badge.className = 'status-badge';
       txt.textContent = 'Idle';
-      
+
       // If we were running but now idle, ensure buttons are reset
       const stopBtn = document.querySelector('#controlPanel .btn-secondary');
       if (stopBtn) {
@@ -460,7 +460,7 @@ async function shutdownServer() {
   try {
     appendLog('INFO', 'Permintaan exit dikirim ke API...');
     const res = await apiPost('/api/exit', {});
-    
+
     if (res.ok) {
       appendLog('WARN', 'Remote shutdown initiated... goodbye!');
       document.body.innerHTML = `
@@ -527,7 +527,7 @@ async function startTest() {
     errData.length = 0; scCumulative = {};
 
     const yaml = generateYAML(profile, target, method, dur, rps, h2, ka, unit, ua, headersRaw, timeout, evasion, latencyThresh, followRedirect);
-    
+
     let displayLoad = `${rps} ${unit}`;
     if (profile !== 'custom') {
       const p = predefinedProfiles.find(x => (x.test_type || x.TestType) === profile);
@@ -535,7 +535,7 @@ async function startTest() {
         displayLoad = `${p.stages.length} stages (Profile: ${profile})`;
       }
     }
-    
+
     appendLog('INFO', `Sending START request (op: ${op}, target: ${displayLoad})…`);
     const res = await apiPost('/api/start', { scenario_yaml: yaml, operator: op });
 
@@ -652,7 +652,7 @@ async function runBatch(urls) {
             clearInterval(poller);
             resolve();
           }
-        } catch(_) {}
+        } catch (_) { }
       }, 1500);
     });
 
@@ -788,7 +788,7 @@ function onProfileChange() {
     row.style.display = 'flex';
   } else {
     row.style.display = 'none';
-    
+
     // Auto-set defaults based on the chosen scenario profile
     const p = predefinedProfiles.find(x => x.test_type === profileVal);
     if (p) {
@@ -803,7 +803,7 @@ function generateYAML(profileVal, target, method, duration, peakVal, http2, keep
   let stages = '';
   let extra = '';
   const headers = {};
-  
+
   // 1. Load baseline headers from profile if exists
   if (profileVal !== 'custom') {
     const p = predefinedProfiles.find(x => x.test_type === profileVal);
@@ -853,7 +853,7 @@ function generateYAML(profileVal, target, method, duration, peakVal, http2, keep
     duration: ${dur}
     rps: ${rps}`;
       }).join('');
-      
+
       if (p.adaptive || p.Adaptive) {
         const maxR = p.adaptive_max_rps || p.AdaptiveMaxRPS || 30000;
         const stepR = p.adaptive_step_rps || p.AdaptiveStepRPS;
@@ -935,21 +935,21 @@ async function loadProfiles() {
   try {
     const profiles = await apiGet('/api/config/profiles');
     predefinedProfiles = Array.isArray(profiles) ? profiles : [];
-    
+
     // Always start with Custom
     sel.innerHTML = '<option value="custom">Custom (Manual)</option>';
-    
+
     predefinedProfiles.forEach(p => {
       const type = p.test_type || p.TestType || '';
-      if (!type) return; 
-      
+      if (!type) return;
+
       const opt = document.createElement('option');
       opt.value = type;
       const label = type.charAt(0).toUpperCase() + type.slice(1);
       opt.textContent = label;
       sel.appendChild(opt);
     });
-    
+
     appendLog('INFO', `Successfully loaded ${predefinedProfiles.length} test profiles`);
   } catch (err) {
     if (err.message.includes('Unauthorized') || err.message.includes('401')) {
